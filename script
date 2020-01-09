@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -x
+
+keys=(500 500 500 500 500 240 40) 
+sizes=(1 10 100 1024 10240 102400 1024000)
+
+echo "fisier"
+for i in $(seq 0 6)
+do
+        output=`./profiler write ${keys[$i]} ${sizes[$i]}`
+        duration=`echo $output | cut -d ' ' -f2`
+        echo "$duration"
+
+        for batch in 1 5 10 20
+        do
+            touch "file_${batch}"
+            echo -n "${keys[$i]} ${sizes[$i]} " >> "file_${batch}"
+            output=`./profiler read ${keys[$i]} ${batch}`
+            duration=`echo $output | cut -d ' ' -f2`
+            echo ${duration} >> "file_${batch}"
+            echo "$duration"
+        done
+done

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+ifconfig lo mtu 1500
+
+ethtool -K lo gso off
+ethtool -K lo tso off
+
+tc qdisc add dev lo root handle 1:0 htb default 1
+tc class add dev lo parent 1:0 classid 1:1 htb rate 100Mbit
+tc qdisc add dev lo parent 1:1 handle 10: netem delay 5ms limit 100
